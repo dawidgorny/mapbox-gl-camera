@@ -51,6 +51,11 @@ mapInstance.on('style.load', () => {
 
 source: [examples/regl.js](examples/regl.js)
 
+#### Building the example
+```
+MAPBOX_TOKEN=your_mapbox_access_token npm run watch
+```
+
 ## References
  * https://github.com/mapbox/mapbox-gl-js/issues/7395
  * https://github.com/mapbox/mapbox-gl-js/issues/7268
