@@ -54,3 +54,6 @@ source: [examples/regl.js](examples/regl.js)
 ## References
  * https://github.com/mapbox/mapbox-gl-js/issues/7395
  * https://github.com/mapbox/mapbox-gl-js/issues/7268
+ * https://github.com/peterqliu/threebox
+
+MIT License
