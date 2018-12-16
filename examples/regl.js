@@ -1,4 +1,5 @@
 import { Camera } from '../index';
+import Mesh from './mesh';
 
 const domready = require('domready');
 const mapboxgl = require('mapbox-gl');
@@ -14,15 +15,21 @@ let roundedCube = createRoundedCube(1, 1, 1, 10, 10, 10, 0.15);
 roundedCube.positions = roundedCube.positions.map(v => vec3.scale(v, v, 0.1));
 
 const mapCenter = [13.418314, 52.49871, 10];
-// const mapCenter = [0, 0, 20];
 
 let t = 0;
-let camera = new Camera();
+const camera = new Camera();
+
+function getModelMatrix (lngLatAlt, scale) {
+  const modelMat = new Float64Array(16);
+  mat4.identity(modelMat);
+  mat4.translate(modelMat, modelMat, camera.positionFromLngLatAlt(lngLatAlt));
+  mat4.scale(modelMat, modelMat, [scale, scale, scale]);
+  return modelMat;
+}
 
 const createScene = function (gl) {
-  // this.map = map;
   let regl = REGL(gl);
-  const drawExampleMesh = regl({
+  const drawScope = regl({
     context: {
       tick: () => t
     },
@@ -36,7 +43,7 @@ const createScene = function (gl) {
     void main() {
       vposition = position;
       vnormal = normal;
-      gl_Position = comp * vec4(position, 1);
+      gl_Position = comp * model * vec4(position, 1);
     }`,
     frag: `
     precision mediump float;
@@ -57,57 +64,50 @@ const createScene = function (gl) {
       }
       gl_FragColor = vec4(light, 1);
     }`,
-
-    attributes: {
-      position: regl.buffer(roundedCube.positions),
-      normal: regl.buffer(roundedCube.normals)
-    },
-    elements: roundedCube.cells,
     uniforms: {
-      model: regl.prop('model'),
       view: regl.prop('view'),
       projection: regl.prop('projection'),
       viewProjection: regl.prop('viewProjection'),
-      comp: regl.prop('comp'),
+      // comp: regl.prop('comp'),
       'lights[0].color': [1, 0, 0],
       'lights[1].color': [0, 1, 0],
       'lights[2].color': [0, 0, 1],
       'lights[3].color': [1, 1, 0],
       'lights[0].position': ({tick}) => {
-        const t = 0.1 * tick
+        const t = 0.1 * tick;
         return [
           10 * Math.cos(0.09 * (t)),
           10 * Math.sin(0.09 * (2 * t)),
           10 * Math.cos(0.09 * (3 * t))
-        ]
+        ];
       },
       'lights[1].position': ({tick}) => {
-        const t = 0.1 * tick
+        const t = 0.1 * tick;
         return [
           10 * Math.cos(0.05 * (5 * t + 1)),
           10 * Math.sin(0.05 * (4 * t)),
           10 * Math.cos(0.05 * (0.1 * t))
-        ]
+        ];
       },
       'lights[2].position': ({tick}) => {
-        const t = 0.1 * tick
+        const t = 0.1 * tick;
         return [
           10 * Math.cos(0.05 * (9 * t)),
           10 * Math.sin(0.05 * (0.25 * t)),
           10 * Math.cos(0.05 * (4 * t))
-        ]
+        ];
       },
       'lights[3].position': ({tick}) => {
-        const t = 0.1 * tick
+        const t = 0.1 * tick;
         return [
           10 * Math.cos(0.1 * (0.3 * t)),
           10 * Math.sin(0.1 * (2.1 * t)),
           10 * Math.cos(0.1 * (1.3 * t))
-        ]
+        ];
       }
     },
     depth: {
-      mask: false,
+      mask: true,
       enable: true
     },
     cull: {
@@ -116,31 +116,23 @@ const createScene = function (gl) {
     }
   });
 
+  const mapMeshPos = camera.positionFromLngLatAlt(mapCenter);
+  const roundedCubeMesh = new Mesh(regl, mapMeshPos, [0, 0, 0], 1.0, roundedCube);
+  const roundedCubeMesh2 = new Mesh(regl, mapMeshPos, [0.1, 0.1, 0.1], 1.0, roundedCube);
+  const roundedCubeMesh3 = new Mesh(regl, camera.positionFromLngLatAlt([mapCenter[0] + 0.0003, mapCenter[1], mapCenter[2]]), [0, 0, 0], 1.5, roundedCube);
+
   const render = function (camera) {
-    const modelScale = 1.0;
-    const modelPosition = mapCenter;
-
-    const modelMat = new Float64Array(16);
-    mat4.identity(modelMat);
-    mat4.translate(modelMat, modelMat, camera.positionFromLngLatAlt(modelPosition));
-    camera.positionFromLngLatAlt(modelPosition);
-    mat4.scale(modelMat, modelMat, [modelScale, modelScale, modelScale]);
-
-    const compMat = new Float64Array(16);
-    mat4.identity(compMat);
-    mat4.multiply(compMat, compMat, camera.viewProjection);
-    mat4.multiply(compMat, compMat, camera.world);
-    mat4.multiply(compMat, compMat, modelMat);
-
-    t++;
-
-    drawExampleMesh({
-      model: modelMat,
+    drawScope({
       view: camera.view,
       projection: camera.projection,
-      viewProjection: camera.viewProjection,
-      comp: compMat
+      viewProjection: camera.viewProjection
+    }, () => {
+      roundedCubeMesh.draw(camera);
+      roundedCubeMesh2.draw(camera);
+      roundedCubeMesh3.draw(camera);
     });
+
+    t++;
   };
 
   return { render };
@@ -173,7 +165,6 @@ const createMap = () => {
       }
     });
   });
-
 };
 
 domready(() => {
