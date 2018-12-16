@@ -1,6 +1,6 @@
 {
   "name": "mapbox-gl-camera",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Camera helper for WebGL custom layers on top of mapbox-gl-js",
   "main": "index.js",
   "scripts": {
