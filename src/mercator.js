@@ -1,3 +1,7 @@
+/**
+ * from mapbox-gl-js
+ */
+
 /*
  * The circumference of the world in meters at the given latitude.
  */

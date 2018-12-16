@@ -1,7 +1,7 @@
 {
   "name": "mapbox-gl-camera",
   "version": "1.0.0",
-  "description": "",
+  "description": "Camera helper for WebGL custom layers on top of mapbox-gl-js",
   "main": "index.js",
   "scripts": {
     "watch": "webpack --watch --config webpack-examples.config.js",
@@ -11,21 +11,16 @@
   },
   "author": "Dawid Górny",
   "license": "MIT",
+  "dependencies": {
+    "gl-mat4": "^1.2.0"
+  },
   "devDependencies": {
     "angle-normals": "^1.0.0",
-    "bunny": "^1.0.1",
     "domready": "^1.0.8",
-    "gl-mat4": "^1.2.0",
-    "gl-vec2": "^1.3.0",
-    "gl-vec3": "^1.1.3",
     "mapbox-gl": "^0.52.0-beta.2",
-    "normals": "^1.1.0",
-    "perspective-camera": "^2.0.1",
     "primitive-cube": "^2.0.1",
     "primitive-rounded-cube": "^1.0.2",
     "regl": "^1.3.9",
-    "resl": "^1.0.3",
-    "vec3": "^0.1.3",
     "webpack": "^4.27.1",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10"

@@ -7,7 +7,6 @@ const mapboxgl = require('mapbox-gl');
 mapboxgl.accessToken = process.env.MAPBOX_TOKEN;
 
 const REGL = require('regl');
-const vec3 = require('gl-vec3');
 const mat4 = require('gl-mat4');
 const createCube = require('primitive-cube');
 const createRoundedCube = require('primitive-rounded-cube');
@@ -15,7 +14,7 @@ const createRoundedCube = require('primitive-rounded-cube');
 const groundGeom = createCube(1, 1, 0.001, 3, 3, 3);
 const roundedCube = createRoundedCube(1, 1, 1, 10, 10, 10, 0.15);
 
-const mapCenter = [13.418314, 52.49871, 1];
+const mapCenter = [13.418314, 52.49871, 3.5];
 
 let t = 0;
 const camera = new Camera();

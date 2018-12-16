@@ -48,6 +48,7 @@ mapInstance.on('style.load', () => {
 
 ### Using [regl](https://github.com/regl-project/regl)
 ![examples/example-regl.gif](examples/example-regl.gif)
+
 source: [examples/regl.js](examples/regl.js)
 
 ## References
