@@ -21,6 +21,7 @@
     "mapbox-gl": "^0.52.0-beta.2",
     "normals": "^1.1.0",
     "perspective-camera": "^2.0.1",
+    "primitive-cube": "^2.0.1",
     "primitive-rounded-cube": "^1.0.2",
     "regl": "^1.3.9",
     "resl": "^1.0.3",

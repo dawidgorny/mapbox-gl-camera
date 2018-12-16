@@ -9,12 +9,13 @@ mapboxgl.accessToken = process.env.MAPBOX_TOKEN;
 const REGL = require('regl');
 const vec3 = require('gl-vec3');
 const mat4 = require('gl-mat4');
+const createCube = require('primitive-cube');
 const createRoundedCube = require('primitive-rounded-cube');
 
-let roundedCube = createRoundedCube(1, 1, 1, 10, 10, 10, 0.15);
-roundedCube.positions = roundedCube.positions.map(v => vec3.scale(v, v, 0.1));
+const groundGeom = createCube(1, 1, 0.001, 3, 3, 3);
+const roundedCube = createRoundedCube(1, 1, 1, 10, 10, 10, 0.15);
 
-const mapCenter = [13.418314, 52.49871, 10];
+const mapCenter = [13.418314, 52.49871, 1];
 
 let t = 0;
 const camera = new Camera();
@@ -107,8 +108,8 @@ const createScene = function (gl) {
       }
     },
     depth: {
-      mask: true,
-      enable: true
+      enable: true,
+      mask: true
     },
     cull: {
       enable: true,
@@ -117,9 +118,10 @@ const createScene = function (gl) {
   });
 
   const mapMeshPos = camera.positionFromLngLatAlt(mapCenter);
-  const roundedCubeMesh = new Mesh(regl, mapMeshPos, [0, 0, 0], 1.0, roundedCube);
-  const roundedCubeMesh2 = new Mesh(regl, mapMeshPos, [0.1, 0.1, 0.1], 1.0, roundedCube);
-  const roundedCubeMesh3 = new Mesh(regl, camera.positionFromLngLatAlt([mapCenter[0] + 0.0003, mapCenter[1], mapCenter[2]]), [0, 0, 0], 1.5, roundedCube);
+  const groundMesh = new Mesh(regl, [mapMeshPos[0], mapMeshPos[1], 0], [0, 0, 0], 1.0, groundGeom);
+  const roundedCubeMesh = new Mesh(regl, mapMeshPos, [0, 0, 0], 0.1, roundedCube);
+  const roundedCubeMesh2 = new Mesh(regl, mapMeshPos, [1.1, 0.1, 0.1], 0.1, roundedCube);
+  const roundedCubeMesh3 = new Mesh(regl, camera.positionFromLngLatAlt([mapMeshPos[0] + 0.0003, mapMeshPos[1], mapMeshPos[2]]), [0, 0, 0], 0.15, roundedCube);
 
   const render = function (camera) {
     drawScope({
@@ -127,6 +129,7 @@ const createScene = function (gl) {
       projection: camera.projection,
       viewProjection: camera.viewProjection
     }, () => {
+      // groundMesh.draw(camera);
       roundedCubeMesh.draw(camera);
       roundedCubeMesh2.draw(camera);
       roundedCubeMesh3.draw(camera);

@@ -10,6 +10,9 @@ export default class Mesh {
     this.positions = regl.buffer(positions);
     this.cells = cells;
     this.normals = regl.buffer(normals);
+
+    this._mercatorMat = new Float64Array(16);
+    this._compMat = new Float64Array(16);
   }
 
   draw (camera) {
@@ -26,18 +29,16 @@ export default class Mesh {
           ];
         },
         comp: () => {
-          const mercatorMat = new Float64Array(16);
-          mat4.identity(mercatorMat);
-          mat4.translate(mercatorMat, mercatorMat, this.mapPosition);
-          mat4.scale(mercatorMat, mercatorMat, [this.scale, this.scale, this.scale]);
+          mat4.identity(this._mercatorMat);
+          mat4.translate(this._mercatorMat, this._mercatorMat, this.mapPosition);
+          mat4.scale(this._mercatorMat, this._mercatorMat, [this.scale, this.scale, this.scale]);
 
-          const compMat = new Float64Array(16);
-          mat4.identity(compMat);
-          mat4.multiply(compMat, compMat, camera.viewProjection);
-          mat4.multiply(compMat, compMat, camera.world);
-          mat4.multiply(compMat, compMat, mercatorMat);
+          mat4.identity(this._compMat);
+          mat4.multiply(this._compMat, this._compMat, camera.viewProjection);
+          mat4.multiply(this._compMat, this._compMat, camera.world);
+          mat4.multiply(this._compMat, this._compMat, this._mercatorMat);
 
-          return compMat;
+          return this._compMat;
         }
       },
       attributes: {
@@ -48,6 +49,10 @@ export default class Mesh {
       cull: {
         enable: true,
         face: 'back'
+      },
+      depth: {
+        enable: true,
+        mask: true
       }
     })();
   }
